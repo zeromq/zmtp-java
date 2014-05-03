@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+group = 'com.zeromq'
+version = '0.1.0-SNAPSHOT'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+def projectPom = {
+    name = fullName
+    description = fullDescription
+    url = siteUrl
+
+    scm {
+        url = "scm:$sourceUrl"
+        connection = "scm:$sourceUrl"
+    }
+
+    licenses {
+        license {
+            name = 'Mozilla Public License Version 2.0'
+            url = 'http://www.mozilla.org/MPL/2.0/'
+            distribution = 'repo'
+        }
+    }
+
+    developers {
+        developer {
+            id = 'team'
+            name = 'Trevor Bernard'
+            email = 'trevor.bernard@gmail.com'
+        }
+    }
+}
+
+dependencies {
+    // The production code uses the SLF4J logging API at compile time
+    compile 'org.slf4j:slf4j-api:1.7.5'
+
+    // Declare the dependency for your favourite test framework you want to use in your tests.
+    // TestNG is also supported by the Gradle Test task. Just change the
+    // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
+    // 'test.useTestNG()' to your build script.
+    testCompile 'junit:junit:4.11'
+}
