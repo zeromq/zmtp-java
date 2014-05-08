@@ -27,11 +27,15 @@ public class TCPChannel implements Channel, Closeable {
         channel.write(signature);
         DirectBuffer incoming = new DirectBuffer(ByteBuffer.allocate(10));
         channel.read(incoming.byteBuffer());
-        if (incoming.getByte(0) != 0xff)
+        System.out.println(incoming.byteBuffer());
+        if (incoming.getByte(0) != (byte) 0xff) {
+            System.out.println("First byte is not 0xFF");
             return false;
-        if ((incoming.getByte(9) & 1) != 1)
+        }
+        if ((incoming.getByte(9) & 1) != 1) {
             return false;
-
+        }
+        System.out.println("Past greeting");
         channel.write(ByteBuffer.wrap(new byte[] { '3' }));
         ByteBuffer b = ByteBuffer.allocate(1);
         channel.read(b);
@@ -50,7 +54,7 @@ public class TCPChannel implements Channel, Closeable {
         channel.read(ByteBuffer.allocate(1));
         channel.read(ByteBuffer.allocate(31));
 
-        zmtpSend(channel, "READY\0");
+        zmtpSend(channel, "\5READY");
 
         zmtpRecv(channel);
 
@@ -96,6 +100,10 @@ public class TCPChannel implements Channel, Closeable {
         ByteBuffer data = ByteBuffer.allocate((int) size);
         channel.read(data);
         data.flip();
+        byte recvFlags = flags.get(0);
+        if ((recvFlags & Message.ZMTP_COMMAND_FLAG) == Message.ZMTP_COMMAND_FLAG) {
+            System.out.println("received a command!");
+        }
         return data;
     }
 
@@ -112,5 +120,10 @@ public class TCPChannel implements Channel, Closeable {
     @Override
     public void close() throws IOException {
         this.channel.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        TCPChannel chan = new TCPChannel("localhost", 1337);
+        System.out.println(chan.negotiate());
     }
 }
